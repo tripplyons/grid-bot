@@ -1,9 +1,9 @@
 {
     "coin": "ALGO",
     "base": "USDT",
-    "orders": 25,
-    "order_size": 0.75,
-    "center": 1.35,
-    "spacing": 0.02,
+    "orders": 30,
+    "order_size": 0.65,
+    "center": 1.45,
+    "spacing": 0.014,
     "decimals": 3
 }
