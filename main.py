@@ -104,5 +104,5 @@ def init_orders():
 init_orders()
 
 while True:
-    time.sleep(5)
+    time.sleep(30)
     check_for_fills()
