@@ -58,10 +58,11 @@ def check_and_order():
         open_sell_orders[key] = False
 
     for item in orders['items']:
+        level = float(item['price'])
         if item['side'] == 'sell':
-            open_sell_orders[item['price']] = True
+            open_sell_orders[level] = True
         else:
-            open_buy_orders[item['price']] = True
+            open_buy_orders[level] = True
     
     for i in range(len(levels) - 1):
         if levels[i + 1] < price:
@@ -72,7 +73,7 @@ def check_and_order():
             if not open_sell_orders[levels[i]]:
                 open_sell(levels[i])
 
-client.cancel_all_orders(symbol=pair)
+# client.cancel_all_orders(symbol=pair)
 
 while True:
     check_and_order()
