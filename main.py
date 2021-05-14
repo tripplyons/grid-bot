@@ -21,24 +21,18 @@ def now():
 buy_levels = []
 sell_levels = []
 
+decimals = settings['decimals']
+
 orders_per_side = settings['orders'] // 2
 
 for i in range(orders_per_side):
-    buy_levels.append(settings['center'] - settings['spacing'] * (i + 0.5))
-    sell_levels.append(settings['center'] + settings['spacing'] * (i + 0.5))
+    buy_levels.append(round(settings['center'] - settings['spacing'] * (i + 0.5), decimals))
+    sell_levels.append(round(settings['center'] + settings['spacing'] * (i + 0.5), decimals))
 
 last_fill = ''
 
 def get_price():
     return float(client.get_ticker(pair)['price'])
-
-increment = 0
-
-for i in client.get_symbols():
-    if i['symbol'] == pair:
-        increment = float(i['baseIncrement'])
-
-decimals = int(np.log10(1 / increment))
 
 def open_buy(level):
     print('Buy order at {}'.format(level))
@@ -75,28 +69,28 @@ def check_for_fills():
     total = num_sell + num_buy
     error = orders_per_side * 2 - total
 
-    if get_price() > sell_levels[0]:
-        # refill buys
-        for level in buy_levels:
-            if not open_buy_orders[level]:
-                open_buy(level)
-                open_buy_orders[level] = True
+    if get_price() > settings['center']:
+        if get_price() > sell_levels[0]:
+            # refill buys
+            for level in buy_levels:
+                if not open_buy_orders[level]:
+                    open_buy(level)
+                    open_buy_orders[level] = True
         
         while error > 0:
             open_buy(buy_levels[0])
             error -= 1
-    elif get_price() < buy_levels[0]:
-        #refill sells
-        for level in sell_levels:
-            if not open_sell_orders[level]:
-                open_sell(level)
-                open_sell_orders[level] = True
+    else:
+        if get_price() < buy_levels[0]:
+            #refill sells
+            for level in sell_levels:
+                if not open_sell_orders[level]:
+                    open_sell(level)
+                    open_sell_orders[level] = True
 
         while error > 0:
             open_sell(sell_levels[0])
             error -= 1
-    
-
 
 def init_orders():
     client.cancel_all_orders(symbol=pair)
@@ -107,5 +101,5 @@ def init_orders():
 init_orders()
 
 while True:
-    time.sleep(10)
+    time.sleep(5)
     check_for_fills()
