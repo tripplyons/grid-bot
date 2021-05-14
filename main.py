@@ -94,9 +94,12 @@ def check_for_fills():
 
 def init_orders():
     client.cancel_all_orders(symbol=pair)
+    price = get_price()
     for i in range(orders_per_side):
-        open_buy(buy_levels[i])
-        open_sell(sell_levels[i])
+        if buy_levels[i] < price:
+            open_buy(buy_levels[i])
+        if sell_levels[i] > price:
+            open_sell(sell_levels[i])
 
 init_orders()
 
