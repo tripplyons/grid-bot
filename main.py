@@ -57,14 +57,11 @@ def check_and_order():
     for key in levels:
         open_sell_orders[key] = False
 
-    total_orders = 0
-
     for item in orders['items']:
-        total_orders += 1
         if item['side'] == 'sell':
-            open_sell_orders[price] = True
+            open_sell_orders[item['price']] = True
         else:
-            open_buy_orders[price] = True
+            open_buy_orders[item['price']] = True
     
     for i in range(len(levels) - 1):
         if levels[i + 1] < price:
