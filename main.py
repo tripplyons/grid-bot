@@ -47,7 +47,7 @@ def open_sell(level):
 
 def check_and_order():
     price = get_price()
-    orders = client.get_orders(pair, limit=max_orders, status='active')
+    orders = client.get_orders(pair, limit=max_orders * 2, status='active')
 
     open_buy_orders = {}
     open_sell_orders = {}    
@@ -63,13 +63,15 @@ def check_and_order():
             open_sell_orders[level] = True
         else:
             open_buy_orders[level] = True
+
+    profit_per_trade = 1
     
-    for i in range(len(levels) - 1):
-        if levels[i + 1] < price:
+    for i in range(len(levels) - profit_per_trade):
+        if levels[i + profit_per_trade] < price:
             if not open_buy_orders[levels[i]]:
                 open_buy(levels[i])
-    for i in range(1, len(levels)):
-        if levels[i - 1] > price:
+    for i in range(profit_per_trade, len(levels)):
+        if levels[i - profit_per_trade] > price:
             if not open_sell_orders[levels[i]]:
                 open_sell(levels[i])
 
