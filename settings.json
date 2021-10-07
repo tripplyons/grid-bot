@@ -1,9 +1,10 @@
 {
-    "coin": "ALGO",
+    "coin": "SHIB",
     "base": "USDT",
     "orders": 40,
-    "order_size": 0.50,
-    "center": 1.00,
-    "spacing": 0.01,
-    "decimals": 3
+    "order_size": 10,
+    "center": 0.00003100,
+    "spacing": 0.00000020,
+    "decimals": 8,
+    "margin": 1
 }

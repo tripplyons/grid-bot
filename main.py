@@ -2,6 +2,7 @@ from kucoin.client import Client
 import time
 import json
 import numpy as np
+from kucoin.utils import flat_uuid
 
 with open('keys.json', 'r') as f:
     keys = json.load(f)
@@ -21,8 +22,9 @@ def now():
 levels = []
 
 decimals = settings['decimals']
-
 max_orders = settings['orders']
+margin = settings['margin'] == 1
+order_decimals = 3
 
 for i in range(max_orders // 2):
     levels.append(round(settings['center'] - settings['spacing'] * (i + 0.5), decimals))
@@ -35,15 +37,35 @@ def get_price():
 
 def open_buy(level):
     print('Buy order at {}'.format(level))
-    client.create_limit_order(pair, Client.SIDE_BUY, str(level), str(
-        round(settings['order_size'] / level, decimals)
-    ))
+    if margin:
+        client._post('margin/order', True, data={
+            'clientOid': flat_uuid(),
+            'side': 'buy',
+            'symbol': pair,
+            'price': str(level),
+            'type': 'limit',
+            'size': str(round(settings['order_size'] / level, order_decimals))
+        })
+    else:
+        client.create_limit_order(pair, Client.SIDE_BUY, str(level), str(
+            round(settings['order_size'] / level, order_decimals)
+        ))
 
 def open_sell(level):
     print('Sell order at {}'.format(level))
-    client.create_limit_order(pair, Client.SIDE_SELL, str(level), str(
-        round(settings['order_size'] / level, decimals)
-    ))
+    if margin:
+        client._post('margin/order', True, data={
+            'clientOid': flat_uuid(),
+            'side': 'sell',
+            'symbol': pair,
+            'price': str(level),
+            'type': 'limit',
+            'size': str(round(settings['order_size'] / level, order_decimals))
+        })
+    else:
+        client.create_limit_order(pair, Client.SIDE_SELL, str(level), str(
+            round(settings['order_size'] / level, order_decimals)
+        ))
 
 def check_and_order():
     price = get_price()
@@ -75,7 +97,7 @@ def check_and_order():
             if not open_sell_orders[levels[i]]:
                 open_sell(levels[i])
 
-# client.cancel_all_orders(symbol=pair)
+client.cancel_all_orders(symbol=pair)
 
 while True:
     check_and_order()

@@ -16,3 +16,4 @@ Edit the settings in `settings.json`. Here are the parameters:
 - `order_size: float` - the amount of units in the base currency to buy or sell at each order
 - `center_float: float` - the price of the coin in units of the base in the middle of the trading range
 - `spacing: float` - how far to space out each order
+- `margin: bool (0 or 1)` - trade on the margin account or not
